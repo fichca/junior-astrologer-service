@@ -24,6 +24,7 @@ func NewHandler(
 	logger *logrus.Logger,
 	router fiber.Router,
 	service service) *handler {
+
 	return &handler{
 		l: logger,
 		r: router,
@@ -38,10 +39,10 @@ func (h handler) RegisterRoutes() {
 	APODGroup.Get(allAPODByDateURL, h.AllByDate)
 }
 
-func (h handler) All(c *fiber.Ctx) error {
+func (h handler) All(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (h handler) AllByDate(c *fiber.Ctx) error {
+func (h handler) AllByDate(ctx *fiber.Ctx) error {
 	return nil
 }

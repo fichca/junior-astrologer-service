@@ -11,16 +11,17 @@ type Config struct {
 }
 
 type App struct {
-	HTTP  *HTTP
-	Admin *Admin
-}
-
-type Admin struct {
-	Password string
+	HTTP   *HTTP
+	Client *Client
 }
 
 type DB struct {
 	Postgre *Postgre
+}
+
+type Client struct {
+	ApiKey      string
+	APODBaseURL string
 }
 
 type Postgre struct {
@@ -35,7 +36,8 @@ type HTTP struct {
 
 func (c *Config) Parse() {
 	c.App = &App{
-		HTTP: parseAppHttpEnv(),
+		HTTP:   parseAppHttpEnv(),
+		Client: parseAppClientEnv(),
 	}
 	c.DB = &DB{
 		Postgre: parsePostgreEnv(),
@@ -68,6 +70,20 @@ func parseAppHttpEnv() *HTTP {
 	if cfg.Port == "" {
 		log.Printf("missing HTTP_PORT, using default 8080")
 		cfg.Port = "8080"
+	}
+
+	return &cfg
+}
+
+func parseAppClientEnv() *Client {
+	cfg := Client{}
+	cfg.ApiKey = os.Getenv("APOD_CLIENT_API_KEY")
+	if cfg.ApiKey == "" {
+		log.Fatal("missing APOD_CLIENT_API_KEY")
+	}
+	cfg.APODBaseURL = os.Getenv("APOD_CLIENT_BASE_URL")
+	if cfg.APODBaseURL == "" {
+		log.Fatal("missing APOD_CLIENT_BASE_URL")
 	}
 
 	return &cfg

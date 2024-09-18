@@ -1,0 +1,104 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Junior astrologer service",
+        "title": "Junior astrologer API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/api",
+    "paths": {
+        "/apod/": {
+            "get": {
+                "description": "Retrieves a list of all APOD entries",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "APOD"
+                ],
+                "summary": "Get all APOD entries",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.APODResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/apod/{date}": {
+            "get": {
+                "description": "Retrieves a single APOD entry for the specified date",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "APOD"
+                ],
+                "summary": "Get APOD entry by date",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Date in format yyyy-mm-dd",
+                        "name": "date",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APODResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, invalid date format",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.APODResponse": {
+            "type": "object",
+            "properties": {
+                "copyright": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "explanation": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

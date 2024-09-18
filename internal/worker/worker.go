@@ -1,12 +1,13 @@
 package worker
 
 import (
+	"context"
 	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 )
 
 type apodService interface {
-	ProcessAPOD() error
+	ProcessAPOD(ctx context.Context) error
 }
 
 type worker struct {
@@ -41,11 +42,9 @@ func (w *worker) Stop() {
 
 func (w *worker) executeAPODJob() {
 	w.l.Info("Starting APOD daily job...")
-
-	err := w.as.ProcessAPOD()
+	err := w.as.ProcessAPOD(context.Background())
 	if err != nil {
 		w.l.Errorf("failed to process APOD: %v", err)
 	}
-
 	w.l.Info("APOD data successfully executed.")
 }

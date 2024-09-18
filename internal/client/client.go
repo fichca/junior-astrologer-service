@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/fichca/junior-astrologer-service/internal/config"
 	"github.com/fichca/junior-astrologer-service/internal/model"
+	"io"
 	"net/http"
 	"time"
 )
@@ -23,19 +24,32 @@ func NewClient(clientCfg *config.Client) *client {
 	}
 }
 
-func (as *client) GetAPOD() (*model.APODResponse, error) {
-	url := fmt.Sprintf("%s?api_key=%s", as.cfg.APODBaseURL, as.cfg.ApiKey)
-	resp, err := as.c.Get(url)
+func (c *client) GetAPOD() (*model.APODClientResponse, error) {
+	url := fmt.Sprintf("%s?api_key=%s", c.cfg.APODBaseURL, c.cfg.ApiKey)
+	resp, err := c.c.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	var apod model.APODResponse
+	var apod model.APODClientResponse
 
 	err = json.NewDecoder(resp.Body).Decode(&apod)
 	if err != nil {
 		return nil, err
 	}
 	return &apod, nil
+}
+
+func (c *client) DownloadImage(imageURL string) (io.Reader, error) {
+	resp, err := c.c.Get(imageURL)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to download image: %s", resp.Status)
+	}
+
+	return resp.Body, nil
 }

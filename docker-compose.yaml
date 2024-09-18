@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: 'postgres:13'
+    container_name: 'postgres'
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5440:5432"
+  minio:
+    image: 'bitnami/minio:latest'
+    container_name: 'minio'
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+  junior-astrologer-service:
+    build:
+      context: .
+    image: 'junior_astrologer_service:latest'
+    container_name: 'junior_astrologer_service'
+    ports:
+      - '8081:8080'
+    environment:
+      APOD_CLIENT_API_KEY: ${APOD_CLIENT_API_KEY}
+      APOD_CLIENT_BASE_URL:  ${APOD_CLIENT_BASE_URL}
+      HTTP_PORT:  ${HTTP_PORT}
+      MINIO_BUCKET:  ${MINIO_BUCKET}
+      MINIO_ENDPOINT:  'minio:9000'
+      MINIO_KEYID:  ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY:  ${MINIO_ROOT_PASSWORD}
+      POSTGRE_DRIVER:  ${POSTGRE_DRIVER}
+      POSTGRE_HOST:  'postgres'
+      POSTGRE_NAME:  ${POSTGRES_DB}
+      POSTGRE_PASSWORD:  ${POSTGRES_PASSWORD}
+      POSTGRE_PORT:  '5432'
+      POSTGRE_SSL_MODE:  ${POSTGRE_SSL_MODE}
+      POSTGRE_USER:  ${POSTGRES_USER}
+    depends_on:
+      - 'minio'
+      - 'postgres'
